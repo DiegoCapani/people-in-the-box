@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<title>AR Box Fix</title>
+	<title>AR Box Hole Fix</title>
 
 	<script src="js/three.js"></script>
 
@@ -14,7 +14,7 @@
 	<script src="threex/threex-armarkercontrols.js"></script>
 </head>
 
-<body style="margin:0; overflow:hidden; font-family:Monospace;">
+<body style="margin:0; overflow:hidden;">
 
 <script>
 
@@ -37,7 +37,7 @@ function initialize() {
 
 	renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
 	renderer.setSize(640, 480);
-	renderer.setClearColor(new THREE.Color('lightgrey'), 0);
+	renderer.setClearColor(0x000000, 0);
 	document.body.appendChild(renderer.domElement);
 
 	clock = new THREE.Clock();
@@ -47,15 +47,14 @@ function initialize() {
 		sourceType: 'webcam'
 	});
 
-	arToolkitSource.init(function() {
-		onResize();
-	});
+	arToolkitSource.init(() => onResize());
 
 	window.addEventListener('resize', onResize);
 
 	function onResize() {
 		arToolkitSource.onResize();
 		arToolkitSource.copySizeTo(renderer.domElement);
+
 		if (arToolkitContext.arController !== null) {
 			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
 		}
@@ -67,7 +66,7 @@ function initialize() {
 		detectionMode: 'mono'
 	});
 
-	arToolkitContext.init(function() {
+	arToolkitContext.init(() => {
 		camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
 	});
 
@@ -80,13 +79,13 @@ function initialize() {
 		patternUrl: "data/hiro.patt",
 	});
 
-	// ---------------- TEXTURE ----------------
+	// ---------------- TEXTURES ----------------
 	let loader = new THREE.TextureLoader();
 
 	let wallTexture = loader.load('images/tiles.jpg');
 	let floorTexture = loader.load('images/floor.jpg');
 
-	// pavimento NON ripetuto
+	// niente ripetizione
 	floorTexture.wrapS = THREE.ClampToEdgeWrapping;
 	floorTexture.wrapT = THREE.ClampToEdgeWrapping;
 
@@ -95,32 +94,36 @@ function initialize() {
 
 	let materials = [
 
-		new THREE.MeshLambertMaterial({ map: wallTexture }), // +X
-		new THREE.MeshLambertMaterial({ map: wallTexture }), // -X
-		new THREE.MeshLambertMaterial({ map: wallTexture }), // +Y
-		new THREE.MeshLambertMaterial({ map: floorTexture }), // -Y (fondo)
-		new THREE.MeshLambertMaterial({ map: wallTexture }), // +Z
-		new THREE.MeshLambertMaterial({ map: wallTexture })  // -Z
+		new THREE.MeshLambertMaterial({ map: wallTexture }),
+		new THREE.MeshLambertMaterial({ map: wallTexture }),
+		new THREE.MeshLambertMaterial({ map: wallTexture }),
+		new THREE.MeshLambertMaterial({ map: floorTexture }),
+		new THREE.MeshLambertMaterial({ map: wallTexture }),
+		new THREE.MeshLambertMaterial({ map: wallTexture })
 
 	];
 
-	let mesh1 = new THREE.Mesh(geometry, materials);
-	mesh1.position.y = -1;
-	markerRoot1.add(mesh1);
+	let cube = new THREE.Mesh(geometry, materials);
+	cube.position.y = -1;
+	markerRoot1.add(cube);
 
-	// ---------------- BUCO (CLOAK) ----------------
-	let geometry0 = new THREE.PlaneGeometry(5,5);
+	// ---------------- HOLE (IMPORTANTE) ----------------
 
-	let material0 = new THREE.MeshBasicMaterial({
-		colorWrite: false
+	let holeGeometry = new THREE.PlaneGeometry(25, 25);
+
+	let holeMaterial = new THREE.MeshBasicMaterial({
+		colorWrite: false,
+		depthWrite: false
 	});
 
-	let mesh0 = new THREE.Mesh(geometry0, material0);
+	let hole = new THREE.Mesh(holeGeometry, holeMaterial);
 
-	mesh0.rotation.x = -Math.PI/2;
-	mesh0.position.y = -1;
+	hole.rotation.x = -Math.PI / 2;
 
-	markerRoot1.add(mesh0);
+	// leggero offset per evitare conflitto
+	hole.position.y = -1.01;
+
+	markerRoot1.add(hole);
 }
 
 function update() {
@@ -128,14 +131,10 @@ function update() {
 		arToolkitContext.update(arToolkitSource.domElement);
 }
 
-function render() {
-	renderer.render(scene, camera);
-}
-
 function animate() {
 	requestAnimationFrame(animate);
 	update();
-	render();
+	renderer.render(scene, camera);
 }
 
 </script>
