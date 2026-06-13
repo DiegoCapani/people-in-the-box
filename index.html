@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<title>AR Hole Stable</title>
+	<title>Hello, world!</title>
 
 	<script src='js/three.js'></script>
 	<script src="jsartoolkit5/artoolkit.min.js"></script>
@@ -12,43 +12,48 @@
 	<script src="threex/threex-armarkercontrols.js"></script>
 </head>
 
-<body style='margin:0; overflow:hidden;'>
+<body style='margin:0; overflow:hidden; font-family:Monospace;'>
 
 <script>
 
-let scene, camera, renderer, clock;
-let arToolkitSource, arToolkitContext;
-let markerRoot1;
-let mesh1;
+var scene, camera, renderer, clock, deltaTime, totalTime;
+var arToolkitSource, arToolkitContext;
+var markerRoot1;
+var mesh1;
 
-init();
+initialize();
 animate();
 
-function init(){
-
-	// ---------------- SCENE ----------------
+function initialize()
+{
 	scene = new THREE.Scene();
+
+	let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
+	scene.add(ambientLight);
 
 	camera = new THREE.Camera();
 	scene.add(camera);
 
-	// ---------------- RENDERER (STENCIL ON) ----------------
 	renderer = new THREE.WebGLRenderer({
 		antialias:true,
-		alpha:true,
-		stencil:true
+		alpha:true
 	});
 
+	renderer.setClearColor(new THREE.Color('lightgrey'), 0);
 	renderer.setSize(640,480);
+
+	renderer.domElement.style.position = 'absolute';
+	renderer.domElement.style.top = '0px';
+	renderer.domElement.style.left = '0px';
+
 	document.body.appendChild(renderer.domElement);
 
 	clock = new THREE.Clock();
 
-	// ---------------- LIGHT ----------------
-	scene.add(new THREE.AmbientLight(0xcccccc,1));
-
 	// ---------------- AR SOURCE ----------------
-	arToolkitSource = new THREEx.ArToolkitSource({ sourceType:'webcam' });
+	arToolkitSource = new THREEx.ArToolkitSource({
+		sourceType:'webcam'
+	});
 
 	arToolkitSource.init(function(){
 		onResize();
@@ -59,7 +64,8 @@ function init(){
 	function onResize(){
 		arToolkitSource.onResize();
 		arToolkitSource.copySizeTo(renderer.domElement);
-		if(arToolkitContext.arController){
+
+		if(arToolkitContext.arController !== null){
 			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
 		}
 	}
@@ -83,81 +89,65 @@ function init(){
 		patternUrl:'data/hiro.patt'
 	});
 
-	// ---------------- TEXTURES ----------------
+	// ---------------- TEXTURE ----------------
 	let loader = new THREE.TextureLoader();
 
 	let wallTexture = loader.load('images/tiles.jpg', render);
 	let floorTexture = loader.load('images/floor.jpg', render);
 
-	// niente ripetizione
+	// niente ripetizione pavimento
 	floorTexture.wrapS = THREE.ClampToEdgeWrapping;
 	floorTexture.wrapT = THREE.ClampToEdgeWrapping;
 
-	// ---------------- STENCIL HELPERS ----------------
-	function stencilMaterial(mat){
+	// ---------------- CUBO ----------------
+	let geometry1 = new THREE.CubeGeometry(2,2,2);
 
-		mat.stencilWrite = true;
-		mat.stencilRef = 1;
-		mat.stencilFunc = THREE.EqualStencilFunc;
-		mat.stencilFail = THREE.KeepStencilOp;
-		mat.stencilZFail = THREE.KeepStencilOp;
-		mat.stencilZPass = THREE.KeepStencilOp;
+	let materials = [
 
-		return mat;
-	}
+		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
+		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
+		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
 
-	// ---------------- HOLE PLANE (WRITES STENCIL) ----------------
-	let planeGeo = new THREE.PlaneGeometry(18,18);
+		// 🔥 pavimento interno diverso
+		new THREE.MeshLambertMaterial({ map: floorTexture, side: THREE.BackSide }),
 
-	let planeMat = new THREE.MeshBasicMaterial({
-		colorWrite:false,
-		stencilWrite:true,
-		stencilRef:1,
-		stencilFunc:THREE.AlwaysStencilFunc,
-		stencilFail:THREE.ReplaceStencilOp,
-		stencilZFail:THREE.ReplaceStencilOp,
-		stencilZPass:THREE.ReplaceStencilOp
-	});
+		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
+		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide })
 
-	let hole = new THREE.Mesh(planeGeo, planeMat);
-	hole.rotation.x = -Math.PI/2;
-	markerRoot1.add(hole);
-
-	// ---------------- CUBE ----------------
-	let geo = new THREE.BoxGeometry(2,2,2);
-
-	let mats = [
-
-		stencilMaterial(new THREE.MeshLambertMaterial({ map:wallTexture })),
-		stencilMaterial(new THREE.MeshLambertMaterial({ map:wallTexture })),
-		stencilMaterial(new THREE.MeshLambertMaterial({ map:wallTexture })),
-
-		// 🔥 pavimento diverso
-		stencilMaterial(new THREE.MeshLambertMaterial({ map:floorTexture })),
-
-		stencilMaterial(new THREE.MeshLambertMaterial({ map:wallTexture })),
-		stencilMaterial(new THREE.MeshLambertMaterial({ map:wallTexture }))
 	];
 
-	mesh1 = new THREE.Mesh(geo, mats);
+	mesh1 = new THREE.Mesh(geometry1, materials);
 	mesh1.position.y = -1;
 
 	markerRoot1.add(mesh1);
+
+	// ---------------- BUCO (INVARIATO) ----------------
+	let geometry0 = new THREE.PlaneGeometry(18,18,9,9);
+
+	geometry0.faces.splice(80,2);
+	geometry0.faceVertexUvs[0].splice(80,2);
+
+	let material0 = new THREE.MeshBasicMaterial({
+		colorWrite:false
+	});
+
+	let mesh0 = new THREE.Mesh(geometry0, material0);
+	mesh0.rotation.x = -Math.PI/2;
+
+	markerRoot1.add(mesh0);
 }
 
-function update(){
-	if(arToolkitSource.ready)
+function update()
+{
+	if(arToolkitSource.ready !== false)
 		arToolkitContext.update(arToolkitSource.domElement);
 }
 
-function render(){
-	renderer.render(scene,camera);
-}
-
-function animate(){
+function animate()
+{
 	requestAnimationFrame(animate);
 	update();
-	render();
+	renderer.render(scene,camera);
 }
 
 </script>
