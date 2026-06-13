@@ -115,6 +115,8 @@ function initialize()
 	})
 
 	// the inside of the hole
+// the inside of the hole
+
 let geometry1 = new THREE.BoxGeometry(2,2,2);
 
 let loader = new THREE.TextureLoader();
@@ -122,43 +124,50 @@ let loader = new THREE.TextureLoader();
 let wallTexture = loader.load('images/tiles.jpg', render);
 let floorTexture = loader.load('images/floor.jpg', render);
 
+// opzionale: rende il pavimento più dettagliato
+floorTexture.wrapS = THREE.RepeatWrapping;
+floorTexture.wrapT = THREE.RepeatWrapping;
+floorTexture.repeat.set(4,4);
+
 let materials = [
 
-    new THREE.MeshLambertMaterial({
-        map: wallTexture,
-        side: THREE.BackSide
-    }), // +X
+	new THREE.MeshLambertMaterial({
+		map: wallTexture,
+		side: THREE.BackSide
+	}), // +X
 
-    new THREE.MeshLambertMaterial({
-        map: wallTexture,
-        side: THREE.BackSide
-    }), // -X
+	new THREE.MeshLambertMaterial({
+		map: wallTexture,
+		side: THREE.BackSide
+	}), // -X
 
-    new THREE.MeshLambertMaterial({
-        map: wallTexture,
-        side: THREE.BackSide
-    }), // +Y
+	new THREE.MeshLambertMaterial({
+		map: wallTexture,
+		side: THREE.BackSide
+	}), // +Y
 
-    new THREE.MeshLambertMaterial({
-        map: floorTexture,
-        side: THREE.BackSide
-    }), // -Y (fondo)
+	new THREE.MeshLambertMaterial({
+		map: floorTexture,
+		side: THREE.BackSide
+	}), // -Y (fondo)
 
-    new THREE.MeshLambertMaterial({
-        map: wallTexture,
-        side: THREE.BackSide
-    }), // +Z
+	new THREE.MeshLambertMaterial({
+		map: wallTexture,
+		side: THREE.BackSide
+	}), // +Z
 
-    new THREE.MeshLambertMaterial({
-        map: wallTexture,
-        side: THREE.BackSide
-    })  // -Z
+	new THREE.MeshLambertMaterial({
+		map: wallTexture,
+		side: THREE.BackSide
+	}) // -Z
+
 ];
 
 mesh1 = new THREE.Mesh(geometry1, materials);
-	
-	mesh0.rotation.x = -Math.PI/2;
-	markerRoot1.add(mesh0);	
+
+mesh1.position.y = -1;
+
+markerRoot1.add(mesh1);
 }
 
 
