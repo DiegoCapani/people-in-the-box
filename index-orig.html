@@ -115,34 +115,35 @@ function initialize()
 	})
 
 	// the inside of the hole
-	let geometry1	= new THREE.CubeGeometry(2,2,2);
 	let loader = new THREE.TextureLoader();
-	let texture = loader.load( 'images/tiles.jpg', render );
-	let material1	= new THREE.MeshLambertMaterial({
-		transparent : true,
-		map: texture,
-		side: THREE.BackSide
-	}); 
-	
-	mesh1 = new THREE.Mesh( geometry1, material1 );
-	mesh1.position.y = -1;
-	
-	markerRoot1.add( mesh1 );
-	
-	// the invisibility cloak (plane with a hole)
-	let geometry0 = new THREE.PlaneGeometry(18,18, 9,9);
-	geometry0.faces.splice(80, 2); // make hole by removing top two triangles
-	geometry0.faceVertexUvs[0].splice(80, 2);
-	
-	let material0 = new THREE.MeshBasicMaterial({
-		// map: loader.load( 'images/color-grid.png' ), // for testing placement
-		colorWrite: false
-	});
-	
-	let mesh0 = new THREE.Mesh( geometry0, material0 );
-	
-	mesh0.rotation.x = -Math.PI/2;
-	markerRoot1.add(mesh0);	
+
+let wallTexture = loader.load('images/tiles.jpg', render);
+let floorTexture = loader.load('images/floor.jpg', render);
+
+// 🔥 pavimento NON ripetuto
+floorTexture.wrapS = THREE.ClampToEdgeWrapping;
+floorTexture.wrapT = THREE.ClampToEdgeWrapping;
+
+let geometry1 = new THREE.BoxGeometry(2,2,2);
+
+let materials = [
+
+	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }), // +X
+	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }), // -X
+	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }), // +Y
+
+	// 🔥 FONDO INTERNO DIVERSO
+	new THREE.MeshLambertMaterial({ map: floorTexture, side: THREE.BackSide }),
+
+	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }), // +Z
+	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide })  // -Z
+
+];
+
+mesh1 = new THREE.Mesh(geometry1, materials);
+mesh1.position.y = -1;
+
+markerRoot1.add(mesh1);
 }
 
 
