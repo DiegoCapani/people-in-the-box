@@ -120,26 +120,34 @@ let loader = new THREE.TextureLoader();
 let wallTexture = loader.load('images/tiles.jpg', render);
 let floorTexture = loader.load('images/floor.jpg', render);
 
+// evita ripetizione del pavimento
 floorTexture.wrapS = THREE.ClampToEdgeWrapping;
 floorTexture.wrapT = THREE.ClampToEdgeWrapping;
 
-let geometry1 = new THREE.BoxGeometry(2,2,2);
+let material1 = new THREE.MeshLambertMaterial({
+	transparent: true,
+	map: wallTexture,
+	side: THREE.BackSide
+});
 
-let materials = [
+// 👉 IMPORTANTISSIMO: sostituiamo SOLO il materiale del cubo dopo creazione
+mesh1 = new THREE.Mesh(geometry1, material1);
+mesh1.position.y = -1;
+
+// poi NON usare mesh1 così com’è per il floor, quindi rifacciamo correttamente:
+mesh1.material = [
 
 	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
 	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
 	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
 
+	// 🔥 pavimento interno diverso
 	new THREE.MeshLambertMaterial({ map: floorTexture, side: THREE.BackSide }),
 
 	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
 	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide })
 
 ];
-
-mesh1 = new THREE.Mesh(geometry1, materials);
-mesh1.position.y = -1;
 
 markerRoot1.add(mesh1);
 	
