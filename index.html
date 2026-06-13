@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <head>
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<title>Hello, world!</title>
+	<title>AR Box Floor Fix</title>
 
-	<script src='js/three.js'></script>
+	<script src="js/three.js"></script>
 
 	<script src="jsartoolkit5/artoolkit.min.js"></script>
 	<script src="jsartoolkit5/artoolkit.api.js"></script>
@@ -14,7 +14,7 @@
 	<script src="threex/threex-armarkercontrols.js"></script>
 </head>
 
-<body style='margin:0; overflow:hidden; font-family:Monospace;'>
+<body style="margin:0; overflow:hidden; font-family:Monospace;">
 
 <script>
 
@@ -43,22 +43,27 @@ function initialize()
 
 	clock = new THREE.Clock();
 
-	// AR SOURCE
-	arToolkitSource = new THREEx.ArToolkitSource({ sourceType:'webcam' });
+	// ---------------- AR SOURCE ----------------
+	arToolkitSource = new THREEx.ArToolkitSource({
+		sourceType: 'webcam'
+	});
 
-	arToolkitSource.init(function(){ onResize(); });
+	arToolkitSource.init(function(){
+		onResize();
+	});
 
 	window.addEventListener('resize', onResize);
 
 	function onResize(){
 		arToolkitSource.onResize();
 		arToolkitSource.copySizeTo(renderer.domElement);
+
 		if(arToolkitContext.arController !== null){
 			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
 		}
 	}
 
-	// AR CONTEXT
+	// ---------------- AR CONTEXT ----------------
 	arToolkitContext = new THREEx.ArToolkitContext({
 		cameraParametersUrl: 'data/camera_para.dat',
 		detectionMode: 'mono'
@@ -68,13 +73,13 @@ function initialize()
 		camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
 	});
 
-	// MARKER
+	// ---------------- MARKER ----------------
 	markerRoot1 = new THREE.Group();
 	scene.add(markerRoot1);
 
 	new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
-		type:'pattern',
-		patternUrl:"data/hiro.patt"
+		type: 'pattern',
+		patternUrl: "data/hiro.patt"
 	});
 
 	// ---------------- TEXTURE ----------------
@@ -83,34 +88,34 @@ function initialize()
 	let wallTexture = loader.load('images/tiles.jpg', render);
 	let floorTexture = loader.load('images/floor.jpg', render);
 
-	// pavimento NON ripetuto
+	// IMPORTANTISSIMO: niente ripetizione pavimento
 	floorTexture.wrapS = THREE.ClampToEdgeWrapping;
 	floorTexture.wrapT = THREE.ClampToEdgeWrapping;
 
-	// ---------------- CUBO CON MATERIALI MISTI ----------------
-	let geometry1 = new THREE.CubeGeometry(2,2,2);
+	// ---------------- CUBO ----------------
+	let geometry1 = new THREE.BoxGeometry(2,2,2);
 
 	let materials = [
 
-		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
-		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
-		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
+		new THREE.MeshLambertMaterial({ map: wallTexture }),
+		new THREE.MeshLambertMaterial({ map: wallTexture }),
+		new THREE.MeshLambertMaterial({ map: wallTexture }),
 
-		// 🔥 SOLO IL FONDO È DIVERSO
-		new THREE.MeshLambertMaterial({ map: floorTexture, side: THREE.BackSide }),
+		// fondo interno diverso
+		new THREE.MeshLambertMaterial({ map: floorTexture }),
 
-		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
-		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide })
+		new THREE.MeshLambertMaterial({ map: wallTexture }),
+		new THREE.MeshLambertMaterial({ map: wallTexture })
 
 	];
 
 	mesh1 = new THREE.Mesh(geometry1, materials);
 	mesh1.position.y = -1;
-
 	markerRoot1.add(mesh1);
 
-	// ---------------- BUCO (INVARIATO) ----------------
+	// ---------------- BUCO (NON TOCCATO - FUNZIONANTE) ----------------
 	let geometry0 = new THREE.PlaneGeometry(18,18,9,9);
+
 	geometry0.faces.splice(80,2);
 	geometry0.faceVertexUvs[0].splice(80,2);
 
@@ -119,17 +124,20 @@ function initialize()
 	});
 
 	let mesh0 = new THREE.Mesh(geometry0, material0);
+
 	mesh0.rotation.x = -Math.PI/2;
 
 	markerRoot1.add(mesh0);
 }
 
-function update(){
+function update()
+{
 	if(arToolkitSource.ready !== false)
 		arToolkitContext.update(arToolkitSource.domElement);
 }
 
-function animate(){
+function animate()
+{
 	requestAnimationFrame(animate);
 	update();
 	renderer.render(scene,camera);
