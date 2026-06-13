@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<title>AR Box</title>
+	<title>AR Box Fix</title>
 
 	<script src="js/three.js"></script>
 
@@ -43,15 +43,15 @@ function initialize() {
 	clock = new THREE.Clock();
 
 	// ---------------- AR SOURCE ----------------
-	arToolkitSource = new THREEx.ArToolkitSource({ sourceType:'webcam' });
+	arToolkitSource = new THREEx.ArToolkitSource({
+		sourceType: 'webcam'
+	});
 
 	arToolkitSource.init(function() {
 		onResize();
 	});
 
-	window.addEventListener('resize', function() {
-		onResize();
-	});
+	window.addEventListener('resize', onResize);
 
 	function onResize() {
 		arToolkitSource.onResize();
@@ -80,28 +80,27 @@ function initialize() {
 		patternUrl: "data/hiro.patt",
 	});
 
-	// ---------------- BOX GEOMETRY ----------------
-
-	let geometry = new THREE.BoxGeometry(2,2,2);
-
+	// ---------------- TEXTURE ----------------
 	let loader = new THREE.TextureLoader();
 
 	let wallTexture = loader.load('images/tiles.jpg');
 	let floorTexture = loader.load('images/floor.jpg');
 
-	// migliora ripetizione pavimento
-	floorTexture.wrapS = THREE.RepeatWrapping;
-	floorTexture.wrapT = THREE.RepeatWrapping;
-	floorTexture.repeat.set(4,4);
+	// pavimento NON ripetuto
+	floorTexture.wrapS = THREE.ClampToEdgeWrapping;
+	floorTexture.wrapT = THREE.ClampToEdgeWrapping;
+
+	// ---------------- CUBO ----------------
+	let geometry = new THREE.BoxGeometry(2,2,2);
 
 	let materials = [
 
-		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }), // +X
-		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }), // -X
-		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }), // +Y
-		new THREE.MeshLambertMaterial({ map: floorTexture, side: THREE.BackSide }), // -Y (fondo)
-		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }), // +Z
-		new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide })  // -Z
+		new THREE.MeshLambertMaterial({ map: wallTexture }), // +X
+		new THREE.MeshLambertMaterial({ map: wallTexture }), // -X
+		new THREE.MeshLambertMaterial({ map: wallTexture }), // +Y
+		new THREE.MeshLambertMaterial({ map: floorTexture }), // -Y (fondo)
+		new THREE.MeshLambertMaterial({ map: wallTexture }), // +Z
+		new THREE.MeshLambertMaterial({ map: wallTexture })  // -Z
 
 	];
 
@@ -109,20 +108,17 @@ function initialize() {
 	mesh1.position.y = -1;
 	markerRoot1.add(mesh1);
 
-	// ---------------- HOLE CLOAK (INVISIBILITY PLANE) ----------------
-
-	let geometry0 = new THREE.PlaneGeometry(18,18,9,9);
-
-	// crea il buco (versione AR.js classica)
-	geometry0.faces.splice(80,2);
-	geometry0.faceVertexUvs[0].splice(80,2);
+	// ---------------- BUCO (CLOAK) ----------------
+	let geometry0 = new THREE.PlaneGeometry(5,5);
 
 	let material0 = new THREE.MeshBasicMaterial({
 		colorWrite: false
 	});
 
 	let mesh0 = new THREE.Mesh(geometry0, material0);
+
 	mesh0.rotation.x = -Math.PI/2;
+	mesh0.position.y = -1;
 
 	markerRoot1.add(mesh0);
 }
