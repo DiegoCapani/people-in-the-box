@@ -120,7 +120,6 @@ let loader = new THREE.TextureLoader();
 let wallTexture = loader.load('images/tiles.jpg', render);
 let floorTexture = loader.load('images/floor.jpg', render);
 
-// niente ripetizione pavimento
 floorTexture.wrapS = THREE.ClampToEdgeWrapping;
 floorTexture.wrapT = THREE.ClampToEdgeWrapping;
 
@@ -128,15 +127,14 @@ let geometry1 = new THREE.BoxGeometry(2,2,2);
 
 let materials = [
 
-	new THREE.MeshLambertMaterial({ map: wallTexture }), // +X
-	new THREE.MeshLambertMaterial({ map: wallTexture }), // -X
-	new THREE.MeshLambertMaterial({ map: wallTexture }), // +Y
+	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
+	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
+	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
 
-	// 🔥 pavimento interno diverso
-	new THREE.MeshLambertMaterial({ map: floorTexture }),
+	new THREE.MeshLambertMaterial({ map: floorTexture, side: THREE.BackSide }),
 
-	new THREE.MeshLambertMaterial({ map: wallTexture }), // +Z
-	new THREE.MeshLambertMaterial({ map: wallTexture })  // -Z
+	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide }),
+	new THREE.MeshLambertMaterial({ map: wallTexture, side: THREE.BackSide })
 
 ];
 
