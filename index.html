@@ -115,19 +115,40 @@ function initialize()
 	})
 
 	// the inside of the hole
-	let geometry1	= new THREE.CubeGeometry(2,2,2);
-	let loader = new THREE.TextureLoader();
-	let texture = loader.load( 'images/tiles.jpg', render );
-	let material1	= new THREE.MeshLambertMaterial({
-		transparent : true,
-		map: texture,
-		side: THREE.BackSide
-	}); 
-	
-	mesh1 = new THREE.Mesh( geometry1, material1 );
-	mesh1.position.y = -1;
-	
-	markerRoot1.add( mesh1 );
+let geometry1	= new THREE.CubeGeometry(2,2,2);
+let loader = new THREE.TextureLoader();
+
+let wallTexture = loader.load('images/tiles.jpg', render);
+let floorTexture = loader.load('images/floor.jpg', render);
+
+// niente ripetizione
+floorTexture.wrapS = THREE.ClampToEdgeWrapping;
+floorTexture.wrapT = THREE.ClampToEdgeWrapping;
+
+let materials = [];
+
+// +X
+materials[0] = new THREE.MeshLambertMaterial({ map: wallTexture });
+
+// -X
+materials[1] = new THREE.MeshLambertMaterial({ map: wallTexture });
+
+// +Y (top)
+materials[2] = new THREE.MeshLambertMaterial({ map: wallTexture });
+
+// -Y (FONDO INTERNO = pavimento)
+materials[3] = new THREE.MeshLambertMaterial({ map: floorTexture });
+
+// +Z
+materials[4] = new THREE.MeshLambertMaterial({ map: wallTexture });
+
+// -Z
+materials[5] = new THREE.MeshLambertMaterial({ map: wallTexture });
+
+mesh1 = new THREE.Mesh(geometry1, materials);
+mesh1.position.y = -1;
+
+markerRoot1.add(mesh1);
 	
 	// the invisibility cloak (plane with a hole)
 	let geometry0 = new THREE.PlaneGeometry(18,18, 9,9);
