@@ -118,7 +118,17 @@ function initialize()
 	let geometry1	= new THREE.CubeGeometry(2,2,2);
 	let loader = new THREE.TextureLoader();
 	let texture = loader.load( 'images/wall.jpg', render );
-	let floorTexture = loader.load( 'images/floor.jpg', render );
+	let floorVideo = document.createElement('video');
+
+floorVideo.src = 'videos/floor.mp4';
+floorVideo.loop = true;
+floorVideo.muted = true;
+floorVideo.autoplay = true;
+floorVideo.playsInline = true;
+
+floorVideo.play();
+
+let floorTexture = new THREE.VideoTexture(floorVideo);
 	let materials = [];
 
 	// +X
