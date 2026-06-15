@@ -125,11 +125,29 @@ function initialize()
 		side: THREE.BackSide
 	}); 
 
+	let material2	= new THREE.MeshLambertMaterial({
+		transparent : true,
+		map: texture,
+		side: THREE.BackSide
+	}); 
+
 	let material3 = new THREE.MeshLambertMaterial({
 		transparent:true,
 		map: floorTexture,
 		side: THREE.BackSide
 	});
+
+		let material4	= new THREE.MeshLambertMaterial({
+		transparent : true,
+		map: texture,
+		side: THREE.BackSide
+	}); 
+
+		let material5	= new THREE.MeshLambertMaterial({
+		transparent : true,
+		map: texture,
+		side: THREE.BackSide
+	}); 
 	
 	mesh1 = new THREE.Mesh( geometry1, material1, material3 );
 	mesh1.position.y = -1;
