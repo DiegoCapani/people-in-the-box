@@ -119,41 +119,54 @@ function initialize()
 	let loader = new THREE.TextureLoader();
 	let texture = loader.load( 'images/tiles.jpg', render );
 	let floorTexture = loader.load( 'images/floor.jpg', render );
-	let material1	= new THREE.MeshLambertMaterial({
-		transparent : true,
-		map: texture,
-		side: THREE.BackSide
-	}); 
+	let materials = [];
 
-	let material2	= new THREE.MeshLambertMaterial({
-		transparent : true,
-		map: texture,
+	// +X
+	materials[0] = new THREE.MeshLambertMaterial({
+		transparent:true,
+		map: wallTexture,
 		side: THREE.BackSide
-	}); 
+	});
 
-	let material3 = new THREE.MeshLambertMaterial({
+	// -X
+	materials[1] = new THREE.MeshLambertMaterial({
+		transparent:true,
+		map: wallTexture,
+		side: THREE.BackSide
+	});
+
+	// +Y (soffitto)
+	materials[2] = new THREE.MeshLambertMaterial({
+		transparent:true,
+		map: wallTexture,
+		side: THREE.BackSide
+	});
+
+	// -Y (🔥 PAVIMENTO INTERNO DIVERSO)
+	materials[3] = new THREE.MeshLambertMaterial({
 		transparent:true,
 		map: floorTexture,
 		side: THREE.BackSide
 	});
 
-		let material4	= new THREE.MeshLambertMaterial({
-		transparent : true,
-		map: texture,
+	// +Z
+	materials[4] = new THREE.MeshLambertMaterial({
+		transparent:true,
+		map: wallTexture,
 		side: THREE.BackSide
-	}); 
+	});
 
-		let material5	= new THREE.MeshLambertMaterial({
-		transparent : true,
-		map: texture,
+	// -Z
+	materials[5] = new THREE.MeshLambertMaterial({
+		transparent:true,
+		map: wallTexture,
 		side: THREE.BackSide
-	}); 
+	});
 
-	
-	mesh1 = new THREE.Mesh( geometry1, material1, material2, material3, material4, material5 );
+	mesh1 = new THREE.Mesh(geometry1, materials);
 	mesh1.position.y = -1;
-	
-	markerRoot1.add( mesh1 );
+
+	markerRoot1.add(mesh1);
 	
 	// the invisibility cloak (plane with a hole)
 	let geometry0 = new THREE.PlaneGeometry(18,18, 9,9);
