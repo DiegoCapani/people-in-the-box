@@ -126,49 +126,14 @@ function initialize()
 	// ---------------- CUBO ----------------
 	
 
-	let materials = [];
 
-	// +X
-	materials[0] = new THREE.MeshLambertMaterial({
+	let materials= new THREE.MeshLambertMaterial({
 		transparent : true,
 		map: texture,
 		side: THREE.BackSide
 	});
 
-	// -X
-	materials[1] = new THREE.MeshLambertMaterial({
-		transparent : true,
-		map: texture,
-		side: THREE.BackSide
-	});
 
-	// +Y (soffitto)
-	materials[2] = new THREE.MeshLambertMaterial({
-		transparent : true,
-		map: texture,
-		side: THREE.BackSide
-	});
-
-	// -Y (🔥 PAVIMENTO INTERNO DIVERSO)
-	materials[3] = new THREE.MeshLambertMaterial({
-		transparent : true,
-		map: floorTexture,
-		side: THREE.BackSide
-	});
-
-	// +Z
-	materials[4] = new THREE.MeshLambertMaterial({
-		transparent : true,
-		map: texture,
-		side: THREE.BackSide
-	});
-
-	// -Z
-	materials[5] = new THREE.MeshLambertMaterial({
-		transparent : true,
-		map: texture,
-		side: THREE.BackSide
-	});
 
 	mesh1 = new THREE.Mesh(geometry1, materials);
 	mesh1.position.y = -1;
@@ -188,8 +153,8 @@ function initialize()
 	
 
 	
-	let material0 = new THREE.MeshBasicMaterial({
-		// map: loader.load( 'images/color-grid.png' ), // for testing placement
+	let material3 = new THREE.MeshBasicMaterial({
+		map: loader.load( 'images/floor.jpg' ), // for testing placement
 		colorWrite: false
 	});
 
