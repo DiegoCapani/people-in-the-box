@@ -118,11 +118,18 @@ function initialize()
 	let geometry1	= new THREE.CubeGeometry(2,2,2);
 	let loader = new THREE.TextureLoader();
 	let texture = loader.load( 'images/tiles.jpg', render );
+	let floorTexture = loader.load( 'images/floor.jpg', render );
 	let material1	= new THREE.MeshLambertMaterial({
 		transparent : true,
 		map: texture,
 		side: THREE.BackSide
 	}); 
+
+	materials3 = new THREE.MeshLambertMaterial({
+		transparent:true,
+		map: floorTexture,
+		side: THREE.BackSide
+	});
 	
 	mesh1 = new THREE.Mesh( geometry1, material1 );
 	mesh1.position.y = -1;
@@ -134,8 +141,8 @@ function initialize()
 	geometry0.faces.splice(80, 2); // make hole by removing top two triangles
 	geometry0.faceVertexUvs[0].splice(80, 2);
 	
-	let material3 = new THREE.MeshBasicMaterial({
-		map: loader.load( 'images/floor.jpg' ), // for testing placement
+	let material0 = new THREE.MeshBasicMaterial({
+		// map: loader.load( 'images/color-grid.png' ), // for testing placement
 		colorWrite: false
 	});
 	
