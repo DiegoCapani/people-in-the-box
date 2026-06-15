@@ -119,7 +119,9 @@ function initialize()
 	let loader = new THREE.TextureLoader();
 	let texture = loader.load( 'images/tiles.jpg', render );
 	let floorTexture = loader.load('images/floor.jpg', render);
-
+	
+	floorTexture.wrapS = THREE.ClampToEdgeWrapping;
+	floorTexture.wrapT = THREE.ClampToEdgeWrapping;
 
 	// ---------------- CUBO ----------------
 	
@@ -150,7 +152,7 @@ function initialize()
 	// -Y (🔥 PAVIMENTO INTERNO DIVERSO)
 	materials[3] = new THREE.MeshLambertMaterial({
 		transparent : true,
-		map: texture,
+		map: floortexture,
 		side: THREE.BackSide
 	});
 
