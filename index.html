@@ -148,8 +148,9 @@ function initialize()
 		map: texture,
 		side: THREE.BackSide
 	}); 
+
 	
-	mesh1 = new THREE.Mesh( geometry1, material1, material3 );
+	mesh1 = new THREE.Mesh( geometry1, material1, material2, material3, material4, material5 );
 	mesh1.position.y = -1;
 	
 	markerRoot1.add( mesh1 );
